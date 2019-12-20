@@ -68,6 +68,8 @@ import org.wso2.carbon.identity.webfinger.WebFingerProcessor;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
@@ -592,6 +594,13 @@ public class EndpointUtil {
 
             if (isOIDC) {
                 consentPage = OAuth2Util.OAuthURL.getOIDCConsentPageUrl();
+                try {
+                    URL url = new URL(consentPage);
+                    String path = url.getPath();
+                    consentPage = IdentityUtil.getServerURL(path, true, true);
+                } catch (MalformedURLException e) {
+                    log.error("Error while parsing consent URL: " + consentPage, e);
+                }
             } else {
                 consentPage = OAuth2Util.OAuthURL.getOAuth2ConsentPageUrl();
             }
